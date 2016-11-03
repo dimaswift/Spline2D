@@ -16,6 +16,9 @@ public class Bezier
     public Type type;
     public bool smooth = false;
     public bool useEvaluationCurve = false;
+    [ReadOnly]
+    public float lenght;
+    public float startLength, endLength;
 
     public Vector3 startHandle
     {
@@ -34,6 +37,30 @@ public class Bezier
         m_handles[0] = new Vector3(-.5f, -5f);
         m_handles[1] = new Vector3(.5f, 5f);
         type = Type.Linear;
+    }
+
+    public float GetLenght()
+    {
+        float l = 0;
+        var point = Evaluate(0);
+        float v = 0f;
+        var distanceStep = .1f;
+        while(v <= 1f)
+        {
+             v += .001f;
+            var next = Evaluate(v);
+            var d = Vector3.Distance(point, next);
+            while(d < distanceStep && v <= 1f)
+            {
+                v += .001f;
+                next = Evaluate(v);
+                d = Vector3.Distance(point, next);
+            }
+            l += d;
+            point = next;
+        }
+        lenght = l;
+        return l;
     }
 
     public Bezier(Vector3 p0, Vector3 p1)
